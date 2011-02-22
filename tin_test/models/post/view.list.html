@@ -1,0 +1,9 @@
+<li>Title: {{title}}, {{content}}</li>
+<a class="tin" tin="{
+    type: 'post', 
+    method: 'delete', 
+    id: '{{_id}}',
+    on_success: 'refresh_list'
+    }">
+    X
+</a>
