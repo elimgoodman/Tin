@@ -1,18 +1,13 @@
 var fs = require("fs");
+var auth = require("./auth");
 
-exports.wireUpStaticPages = function(app, app_dir) {
+exports.wireUpStaticPages = function(app, config) {
 
     //Naively wire up index.html
-    app.get("/", function(req, res) {
-      var filename = app_dir + "/index.html";
+    app.get("/", auth.authUser(config), function(req, res) {
+      var filename = config.app_dir + "/index.html";
       serveStatic(filename, res);
     });    
-    
-    //app.get("/js/:filename", function(req, res) {
-      //var filename = app_dir + "/static/js/" + req.params.filename;
-      //console.log(filename);
-      //serveStatic(filename, res);
-    //});
 }
 
 serveStatic = function(filename, res) {
