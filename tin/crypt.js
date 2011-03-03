@@ -1,10 +1,10 @@
-var bcrypt = require("bcrypt");
+//var bcrypt = require("bcrypt");
 
-var SALT_KEY = 363101;
+//var SALT_KEY = 363101;
 
-exports.encrypt = function(string) {
+//exports.encrypt = function(string) {
     //FIXME: this hangs. why?
-    var salt = bcrypt.gen_salt(SALT_KEY);  
-    return bcrypt.hashpw(string, salt);
-}
+    //var salt = bcrypt.gen_salt(SALT_KEY);  
+    //return bcrypt.hashpw(string, salt);
+//}
 

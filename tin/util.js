@@ -37,3 +37,7 @@ exports.serveStatic = function(filename, res) {
     res.end();
   });
 }
+
+exports.jq = function() {
+    return ["/js/lib/jquery.js", "/js/lib/jquery.metadata.js"];
+}

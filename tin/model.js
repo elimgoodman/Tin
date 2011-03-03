@@ -27,11 +27,6 @@ Model.prototype = {
     render: function(context, data, config) {
         var template = path.join(this.getPath(config.app_dir), context + ".html");
         var template_text = fs.readFileSync(template, "ascii");
-        
-        if(data != {} && data._id != undefined) {
-          var oid = new mongodb.ObjectID(data._id.id);
-          data._id = oid.toHexString();
-        }
 
         return mu.to_html(template_text, data);
     }

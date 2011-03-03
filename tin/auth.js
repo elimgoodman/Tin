@@ -43,8 +43,7 @@ exports.wireUpAuth = function(app, config) {
                         //TODO: some sorta flash message
                         res.redirect("/login");
                     } else {
-                        oid = new _db.oid(results[0]._id.id);
-                        req.session.user_id = oid.toHexString();
+                        req.session.user_id = results[0]._id;
                         console.log(req.session.user_id);
                         res.redirect("/");
                     }
