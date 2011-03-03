@@ -15,9 +15,12 @@ app.use(express.bodyDecoder());
 var config = config.createConfig(process.argv[2]);
 
 //If auto-auth is on, enable session middleware
-if(config.auth) {
+if(config.auth.enabled) {
     app.use(express.cookieDecoder());
     app.use(express.session({secret: 'foo'}));
+
+    //Wire up auth urls
+    auth.wireUpAuth(app, config);
 }
 
 //Wire up static pages

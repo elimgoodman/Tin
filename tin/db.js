@@ -11,3 +11,5 @@ exports.getCollection = function(db, coll_name, callback) {
         db.collection(coll_name, callback);
     });
 }
+
+exports.oid = mongodb.ObjectID;

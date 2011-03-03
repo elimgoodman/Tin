@@ -39,7 +39,6 @@ exports.createAutoRoutes = function(models, app, config) {
 
 
         app.post("/" + model.name + "/delete", function(req, res){
-            console.log(req.body);
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {
                 _id = new mongodb.ObjectID(req.body.id);
