@@ -15,6 +15,8 @@ var getFixturesData = function(models, config) {
 var insertFixtures = function(fixtures, config) {
     var model_names = _.keys(fixtures);
 
+    var num_models = model_names.length;
+    var i = 0;
     var db = _db.getDB(config);
     db.open(function(err, db){
         model_names.forEach(function(model_name){
@@ -27,7 +29,10 @@ var insertFixtures = function(fixtures, config) {
                     collection.insert(fixtures[model_name]);
                     console.log("Inserted " + fixtures[model_name].length + " records");
 
-                    db.close();
+                    i++;
+                    if(i == num_models) {
+                        db.close();
+                    }
                 });
             }); 
         });

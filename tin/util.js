@@ -16,26 +16,26 @@ exports.sendJson = function(obj, res) {
 }
 
 exports.fromBase64 = function(str) { 
-  return (new Buffer(str, "base64")).toString("ascii");
+    return (new Buffer(str, "base64")).toString("ascii");
 };
 
 exports.toBase64 = function(str) {
-  return  (new Buffer(str, "ascii")).toString("base64");
+    return  (new Buffer(str, "ascii")).toString("base64");
 };
 
 exports.serveStatic = function(filename, res) {
-  fs.readFile(filename, "binary", function(err, file) {
-    if(err) {        
-      res.writeHead(500, {"Content-Type": "text/plain"});
-      res.write(err + "\n");
-      res.end();
-      return;
-    }
+    fs.readFile(filename, "binary", function(err, file) {
+        if(err) {        
+            res.writeHead(500, {"Content-Type": "text/plain"});
+            res.write(err + "\n");
+            res.end();
+            return;
+        }
 
-    res.writeHead(200);
-    res.write(file, "binary");
-    res.end();
-  });
+        res.writeHead(200);
+        res.write(file, "binary");
+        res.end();
+    });
 }
 
 exports.jq = function() {

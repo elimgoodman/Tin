@@ -2,5 +2,9 @@
     {
         "login_name": "eli",
         "password": "foo"  
+    },
+    {
+        "login_name": "foo",
+        "password": "bar"
     }
 ]

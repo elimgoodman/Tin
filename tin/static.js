@@ -1,7 +1,7 @@
 var fs = require("fs");
 
-var $ = require("jquery");
-//var jsdom = require("jsdom");
+//var $ = require("jquery");
+var jsdom = require("jsdom");
 
 var util = require("./util");
 var auth = require("./auth");
@@ -13,14 +13,29 @@ exports.wireUpStaticPages = function(app, config) {
       var filename = config.app_dir + "/index.html";
       
       var html = fs.readFileSync(filename, "utf8");
-      //var window = jsdom.jsdom(html).createWindow();
+      var window = jsdom.jsdom(html).createWindow();
 
-      //jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js' , function() {
-          //window.
-          //window.$('body').append('<div class="testing">Hello World, It works</div>');
-      //});
+      jsdom.jQueryify(window, './lib/jquery.js' , function() {
+          var $ = window.$;
+          $('body').append('<div class="testing">Hello World, It works</div>');
+          $('.tin').each(function(){
+              var tin = $(this).attr("tin");
+              var elem = $(this);
+              console.log(JSON.parse(tin));
+              if(elem.is("span")) {
+                  if(req.session.user != undefined) {
+                      elem.html(req.session.user.login_name);
+                  }
+              }
 
-      var dom = $(html);
+          });
+
+          res.writeHead(200);
+          res.write(window.document.innerHTML, "utf8");
+          res.end();
+      });
+
+      //var dom = $(html);
       //dom.remove("hr");
       
       //$(html).find(".tin").each(function(){
@@ -30,10 +45,6 @@ exports.wireUpStaticPages = function(app, config) {
           //console.log(eval("("+tin+")"));
       //});
 
-      res.writeHead(200);
-      console.log(dom[0].innerHTML);
-      res.write(dom[0].innerHTML, "utf8");
-      res.end();
       //util.serveStatic(filename, res);
     });    
 }
