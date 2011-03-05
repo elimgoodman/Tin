@@ -1,10 +1,11 @@
 {
     "app_name": "tin_test",
+    "index_page": "index",
     "port": 3000,
     "db_host": "127.0.0.1",
     "db_port": 27017,
     "auth": {
-        "enabled": true,
+        "enabled": false,
         "user_model": "user",
         "login_page": "login"
     }

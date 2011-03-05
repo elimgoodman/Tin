@@ -7,14 +7,10 @@ var mu = require("mustache");
 var util = require("./util");
 var auth = require("./auth");
 
-var Page = function(name, html, metadata) {
+var Page = function(name, path, require_login) {
     this.name = name;
-    this.html = html;
-    this.metadata = metadata;
-}
-
-wrap = function(html) {
-    return "<div>" + html + "</div>";
+    this.path = path;
+    this.require_login = require_login;
 }
 
 generatePages = function(app_dir, callback) {
@@ -28,12 +24,11 @@ generatePages = function(app_dir, callback) {
         var stripped_name = page_name.split(".")[0];
         var page_path = path.join(page_dir, page_name);
         var html = fs.readFileSync(page_path, "utf8");
-        var html = wrap(html);
+        var html = util.wrap(html, "div");
 
         util.jQueryify(html, function(window, $){
-            var tin_str = $(html).find("meta").attr('tin');
-            var metadata = (tin_str != undefined) ? JSON.parse(tin_str) : {};
-            pages.push(new Page(stripped_name, html, metadata));
+            var require_login = $("tin-meta").attr('require_login') == "true";
+            pages.push(new Page(stripped_name, page_path, require_login));
             console.log("Registered page " + stripped_name);
             
             if(pages.length == page_names.length) {
@@ -60,7 +55,10 @@ exports.wireUpPages = function(app, config) {
               var layout_html = getLayoutHtml(config);
 
               util.jQueryify(layout_html, function(window, $){
-                $("block[name='content']").html(page.html);
+                var html = fs.readFileSync(page.path, "utf8");
+
+                //TODO: check block
+                $("div.tin").html(html);
                 res.writeHead(200);
                 res.write(window.document.innerHTML, "utf8");
                 res.end();

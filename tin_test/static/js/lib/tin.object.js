@@ -1,13 +1,13 @@
 var Tin = function(elem) {
     this.elem = $(elem);
-    this.metadata = $(elem).metadata({type:'attr', name:'tin'});
+    this.metadata = $.getAttributes(elem);
     this.inited = false;
 }
 
 Tin.prototype = {
     init: function() {
       if(!this.inited) {
-        if(this.elem.is("ul")) {
+        if(this.elem.is("tin-ul")) {
           this.initList();
         } else if (this.elem.is("form")) {
           this.initForm();
@@ -23,7 +23,7 @@ Tin.prototype = {
       var self = this;
 
       $.get("/" + this.metadata.type, {}, function(data){
-        self.elem.html(data.html);
+        self.elem.replaceWith(data.html);
         self.elem.find(".tin").tin();
       }, "json");
     },

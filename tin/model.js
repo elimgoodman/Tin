@@ -26,7 +26,7 @@ Model.prototype = {
 
     render: function(context, data, config) {
         var template = path.join(this.getPath(config.app_dir), context + ".html");
-        var template_text = fs.readFileSync(template, "ascii");
+        var template_text = fs.readFileSync(template, "utf8");
 
         return mu.to_html(template_text, data);
     }

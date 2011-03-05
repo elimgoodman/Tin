@@ -51,3 +51,7 @@ exports.jQueryify = function(html, callback) {
           callback(window, window.$);
       });
 }
+
+exports.wrap = function(html, wrapper) {
+    return "<"+wrapper+">" + html + "</"+wrapper+">";
+}

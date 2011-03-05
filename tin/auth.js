@@ -6,7 +6,7 @@ var crypt = require("./crypt");
 
 exports.authUser = function(page, config) {
   return function(req, res, next) {
-    if(config.auth.enabled && page.metadata.require_login) {
+    if(config.auth.enabled && page.require_login) {
         if(req.session.user == undefined) {
             res.redirect("/login");
         }

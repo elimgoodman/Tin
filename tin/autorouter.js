@@ -19,7 +19,7 @@ exports.createAutoRoutes = function(models, app, config) {
                         });
 
                         ret = {};
-                        ret.html = snippets.join("");
+                        ret.html = util.wrap(snippets.join(""), "ul");
                         ret.success = true;
                         db.close();
 
