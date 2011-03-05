@@ -5,7 +5,7 @@ var fs = require("fs"),
     mongodb = require("mongodb");
 
 var Model = function(name) {
-    this.name = name
+    this.name = name;
 }
 
 Model.prototype = {

@@ -30,6 +30,7 @@ var insertFixtures = function(fixtures, config) {
                     console.log("Inserted " + fixtures[model_name].length + " records");
 
                     i++;
+
                     if(i == num_models) {
                         db.close();
                     }

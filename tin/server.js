@@ -5,7 +5,7 @@ var express = require('express');
 var model = require('./model'); 
 var util = require("./util");
 var config = require("./config");
-var static = require("./static");
+var page = require("./page");
 var autorouter = require("./autorouter");
 var auth = require("./auth");
 
@@ -23,9 +23,11 @@ if(config.auth.enabled) {
     auth.wireUpAuth(app, config);
 }
 
-//Wire up static pages
+//Wire up static assets
 app.use(express.staticProvider(config.app_dir + '/static'));
-static.wireUpStaticPages(app, config);
+
+//Wire up pages
+page.wireUpPages(app, config);
 
 //Infer models from dir structure
 var models = model.generateModels(config.app_dir);

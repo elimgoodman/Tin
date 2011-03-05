@@ -1,4 +1,5 @@
 var fs = require('fs');
+var jsdom = require('jsdom');
 
 exports.pluralize = function(str) {
     //FIXME: this can get more complicated..
@@ -40,4 +41,13 @@ exports.serveStatic = function(filename, res) {
 
 exports.jq = function() {
     return ["/js/lib/jquery.js", "/js/lib/jquery.metadata.js"];
+}
+
+exports.jQueryify = function(html, callback) {
+    
+      var window = jsdom.jsdom(html).createWindow();
+
+      jsdom.jQueryify(window, './lib/jquery.js' , function() {
+          callback(window, window.$);
+      });
 }

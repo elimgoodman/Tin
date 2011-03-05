@@ -1,10 +1,12 @@
+var path = require("path");
+
 var util = require("./util");
 var _db = require("./db");
 var crypt = require("./crypt");
 
-exports.authUser = function(config) {
+exports.authUser = function(page, config) {
   return function(req, res, next) {
-    if(config.auth.enabled) {
+    if(config.auth.enabled && page.metadata.require_login) {
         if(req.session.user == undefined) {
             res.redirect("/login");
         }
@@ -15,12 +17,6 @@ exports.authUser = function(config) {
 
 exports.wireUpAuth = function(app, config) {
     
-    app.get("/login", function(req, res){
-        //TODO: make this use config
-        var filename = config.app_dir + "/auth/login.html";
-        util.serveStatic(filename, res);
-    });
-
     app.get('/logout', function(req, res){
         req.session.user = undefined;
         res.redirect("/");
