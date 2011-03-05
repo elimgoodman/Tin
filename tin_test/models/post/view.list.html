@@ -1,9 +1,10 @@
-<li>Title: {{title}}, {{content}}</li>
-<a class="tin" tin="{
-    type: 'post', 
-    method: 'delete', 
-    id: '{{_id}}',
-    on_success: 'refresh_list'
-    }">
+<li>Title: <a class="tin" _model="post" _method="view" _id="{{_id}}">{{title}}</a>
+<a
+    _model="post"
+    _method="delete"
+    _id="{{_id}}"
+    _on_success="refresh_list"
+    class="tin">
     X
 </a>
+</li>

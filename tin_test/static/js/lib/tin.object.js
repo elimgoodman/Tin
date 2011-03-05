@@ -7,10 +7,10 @@ var Tin = function(elem) {
 Tin.prototype = {
     init: function() {
       if(!this.inited) {
-        if(this.elem.is("tin-ul")) {
+        if(this.elem.is("ul")) {
           this.initList();
         } else if (this.elem.is("form")) {
-          this.initForm();
+          this.fetchForm();
         } else if (this.elem.is("a")) {
             this.initAnchor();
         }
@@ -23,45 +23,69 @@ Tin.prototype = {
       var self = this;
 
       $.get("/" + this.metadata._model, {}, function(data){
-        var list = $(data.html);
-        self.elem.replaceWith(list);
-        $.each(self.metadata, function(key, val){
-          list.attr(key, val);
-        });
-        //self.elem.find(".tin").tin();
+        self.elem.html(data.html);
+        //var list = $(data.html);
+        //self.replaceElemWith(list);
+        self.elem.find(".tin").tin();
       }, "json");
     },
 
-    initForm: function() {
+    onFormSubmit: function(self) {
+
+      console.log(self.metadata);
+      var values = self.elem.serializeArray();
+      $.post("/" + self.metadata._model, values, function(data) {
+        if(self.metadata._on_success) {
+          window[self.metadata._on_success](data);
+        }
+      }, "json");
+
+      return false;
+
+    },
+
+    fetchForm: function(){
       var self = this;
 
-      this.elem.submit(function(){
-        var values = self.elem.serializeArray();
-        $.post("/" + self.metadata.type, values, function(data) {
-          if(self.metadata.on_success) {
-            window[self.metadata.on_success](data);
-          }
-        }, "json");
-
-        return false;
-      });
-
-      $.get("/" + this.metadata.type + "/form", {}, function(data){
-        self.elem.html(data.html);
+      $.get("/_forms/" + this.metadata._model, {}, function(data){
+          self.elem.html(data.html);
+          //var form = $(data.html);
+          //self.replaceElemWith(form);
+          self.elem.submit(function(){
+            return self.onFormSubmit(self);
+          });
       }, "json");
+    },
+    
+    replaceElemWith: function(elem) {
+      this.elem.replaceWith(elem);
+      this.elem = elem;
+      this.attachMetadata(elem);
+    },
+
+
+    attachMetadata: function(elem) {
+        $.each(this.metadata, function(key, val){
+          elem.attr(key, val);
+        });
     },
 
     initAnchor: function() {
         var self = this;
 
-        this.elem.attr('href', '#');
         
-        this.elem.click(function() {
-            $.post("/" + self.metadata.type + "/" + self.metadata.method, self.metadata, function(data){
-              if(self.metadata.on_success) {
-                window[self.metadata.on_success](data);
-              }
-            }, "json");
-        });
+        if(this.metadata._method == "view") {
+          this.elem.attr('href', '/' + this.metadata._model + "/" + this.metadata._id);
+        } else {
+          this.elem.attr('href', '#');
+
+          this.elem.click(function() {
+              $.post("/" + self.metadata._model + "/" + self.metadata._method, self.metadata, function(data){
+                if(self.metadata._on_success) {
+                  window[self.metadata._on_success](data);
+                }
+              }, "json");
+          });
+        }
     }
 }

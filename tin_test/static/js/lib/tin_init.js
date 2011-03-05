@@ -28,5 +28,5 @@
 
 
 $(document).ready(function(){
-    $("tin-ul").tin();
+    $(".tin").tin();
 });

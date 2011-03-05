@@ -27,7 +27,7 @@ generatePages = function(app_dir, callback) {
         var html = util.wrap(html, "div");
 
         util.jQueryify(html, function(window, $){
-            var require_login = $("tin-meta").attr('require_login') == "true";
+            var require_login = $("meta.tin").attr('_require_login') == "true";
             pages.push(new Page(stripped_name, page_path, require_login));
             console.log("Registered page " + stripped_name);
             
@@ -45,6 +45,18 @@ getLayoutHtml = function(config) {
 
 }
 
+renderPage = function(html, res, config) {
+  var layout_html = getLayoutHtml(config);
+
+  util.jQueryify(layout_html, function(window, $){
+
+    $("block.tin[_name='content']").html(html);
+    res.writeHead(200);
+    res.write(window.document.innerHTML, "utf8");
+    res.end();
+  });
+}
+
 exports.wireUpPages = function(app, config) {
     
     generatePages(config.app_dir, function(pages) {
@@ -52,21 +64,13 @@ exports.wireUpPages = function(app, config) {
             var url = (config.index_page == page.name) ? "/" : "/" + page.name;
 
             app.get(url, auth.authUser(page, config), function(req, res){
-              var layout_html = getLayoutHtml(config);
-
-              util.jQueryify(layout_html, function(window, $){
-                var html = fs.readFileSync(page.path, "utf8");
-
-                $("tin-block[name='content']").html(html);
-                res.writeHead(200);
-                res.write(window.document.innerHTML, "utf8");
-                res.end();
-              });
+              var html = fs.readFileSync(page.path, "utf8");
+              renderPage(html, res, config);
             });
-            
         });
     });  
-
 }
+
+exports.renderPage = renderPage;
 
 

@@ -1,9 +1,8 @@
-<tin-meta require_login="true" />
+<meta class="tin" _require_login="true" />
 
 <h1> HELLO WORLD </h1>
-<tin-ul _model="post" id="post_list" />
-<hr />
-<form class="tin" tin='{"type": "post", "on_success": "refresh_list"}'>
+<ul class="tin" _model="post" id="post_list" /><hr />
+<form class="tin" _model="post" _on_success="refresh_list" />
 </form>
 Hi, <span class="tin" tin='{"value": "user.login_name"}'></span>
 <a href="/logout">Log out</a>

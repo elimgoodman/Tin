@@ -1,10 +1,24 @@
-var util = require("./util");
-var _db = require("./db");
 var sys = require("sys");
 var mongodb = require("mongodb");
 
+var page = require("./page");
+var util = require("./util");
+var _db = require("./db");
+
 exports.createAutoRoutes = function(models, app, config) {
     models.forEach(function(model) {
+        app.get("/" + model.name + "/:id", function(req, res){
+            var db = _db.getDB(config);
+            _db.getCollection(db, model.name, function(err, collection) {
+                var oid = db.bson_serializer.ObjectID(req.params.id);
+                collection.find({_id: oid}, function(err, cursor) {
+                    cursor.toArray(function(err, results) {
+                        var html = model.render("view.page", results[0], config);
+                        page.renderPage(html, res, config);
+                    });
+                });
+            });
+        });
 
         app.get("/" + model.name, function(req, res){
             var db = _db.getDB(config);
@@ -19,7 +33,7 @@ exports.createAutoRoutes = function(models, app, config) {
                         });
 
                         ret = {};
-                        ret.html = util.wrap(snippets.join(""), "ul");
+                        ret.html = snippets.join("");
                         ret.success = true;
                         db.close();
 
@@ -29,7 +43,7 @@ exports.createAutoRoutes = function(models, app, config) {
             });
         });
 
-        app.get("/" + model.name + "/form", function(req, res){
+        app.get("/_forms/" + model.name, function(req, res){
             ret = {};
             ret.html = model.render("form", {}, config);
             ret.success = true;
@@ -41,8 +55,8 @@ exports.createAutoRoutes = function(models, app, config) {
         app.post("/" + model.name + "/delete", function(req, res){
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {
-                _id = new mongodb.ObjectID(req.body.id);
-                collection.remove({_id: _id}, function(err, result){
+                var oid = db.bson_serializer.ObjectID(req.body._id);
+                collection.remove({_id: oid}, function(err, result){
                     ret = {
                         success: true
                     };
