@@ -57,8 +57,7 @@ exports.wireUpPages = function(app, config) {
               util.jQueryify(layout_html, function(window, $){
                 var html = fs.readFileSync(page.path, "utf8");
 
-                //TODO: check block
-                $("div.tin").html(html);
+                $("tin-block[name='content']").html(html);
                 res.writeHead(200);
                 res.write(window.document.innerHTML, "utf8");
                 res.end();

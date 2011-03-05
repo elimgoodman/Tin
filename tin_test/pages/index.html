@@ -1,8 +1,7 @@
-<meta tin='{"require_login": true}' />
+<tin-meta require_login="true" />
 
 <h1> HELLO WORLD </h1>
-<ul id="post_list" class="tin" tin='{"type": "post"}'>
-</ul>
+<tin-ul _model="post" id="post_list" />
 <hr />
 <form class="tin" tin='{"type": "post", "on_success": "refresh_list"}'>
 </form>

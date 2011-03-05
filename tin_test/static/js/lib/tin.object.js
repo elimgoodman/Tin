@@ -22,9 +22,13 @@ Tin.prototype = {
     initList: function() {
       var self = this;
 
-      $.get("/" + this.metadata.type, {}, function(data){
-        self.elem.replaceWith(data.html);
-        self.elem.find(".tin").tin();
+      $.get("/" + this.metadata._model, {}, function(data){
+        var list = $(data.html);
+        self.elem.replaceWith(list);
+        $.each(self.metadata, function(key, val){
+          list.attr(key, val);
+        });
+        //self.elem.find(".tin").tin();
       }, "json");
     },
 

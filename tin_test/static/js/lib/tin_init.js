@@ -4,7 +4,6 @@
         if(elem.data("tin") == undefined) {
             var tin_obj = new Tin(elem);
             tin_obj.init();
-            console.log(tin_obj);
             elem.data("tin", tin_obj);
         }
 
@@ -29,5 +28,5 @@
 
 
 $(document).ready(function(){
-    $(".tin").tin();
+    $("tin-ul").tin();
 });
