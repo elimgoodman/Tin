@@ -73,19 +73,14 @@ Tin.prototype = {
     initAnchor: function() {
         var self = this;
 
-        
-        if(this.metadata._method == "view") {
-          this.elem.attr('href', '/' + this.metadata._model + "/" + this.metadata._id);
-        } else {
-          this.elem.attr('href', '#');
+        this.elem.attr('href', '#');
 
-          this.elem.click(function() {
-              $.post("/" + self.metadata._model + "/" + self.metadata._method, self.metadata, function(data){
-                if(self.metadata._on_success) {
-                  window[self.metadata._on_success](data);
-                }
-              }, "json");
-          });
-        }
+        this.elem.click(function() {
+          $.post("/" + self.metadata._model + "/" + self.metadata._method, self.metadata, function(data){
+            if(self.metadata._on_success) {
+              window[self.metadata._on_success](data);
+            }
+          }, "json");
+        });
     }
 }

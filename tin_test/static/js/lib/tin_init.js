@@ -29,4 +29,6 @@
 
 $(document).ready(function(){
     $(".tin").tin();
+
+    $(".overlay-trigger").overlay();
 });

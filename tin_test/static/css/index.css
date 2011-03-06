@@ -1,3 +1,38 @@
 * {
     color: green;
 }
+
+/* Overlays */
+.overlay {
+    
+    /* must be initially hidden */
+    display:none;
+    
+    /* place overlay on top of other elements */
+    z-index:10000;
+    
+    background: white;
+    padding: 35px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+
+    width:675px;    
+    min-height:200px;
+    border:1px solid #666;
+    
+    /* CSS3 styling for latest browsers */
+    -moz-box-shadow:0 0 30px 1px #666;
+    -webkit-box-shadow: 0 0 30px #666;  
+}
+
+/* close button positioned on upper right corner */
+.overlay .close {
+    background-image:url(../img/close.png);
+    position:absolute;
+    right:-15px;
+    top:-15px;
+    cursor:pointer;
+    height:35px;
+    width:35px;
+}
+

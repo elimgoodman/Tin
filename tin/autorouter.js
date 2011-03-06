@@ -7,18 +7,6 @@ var _db = require("./db");
 
 exports.createAutoRoutes = function(models, app, config) {
     models.forEach(function(model) {
-        app.get("/" + model.name + "/:id", function(req, res){
-            var db = _db.getDB(config);
-            _db.getCollection(db, model.name, function(err, collection) {
-                var oid = db.bson_serializer.ObjectID(req.params.id);
-                collection.find({_id: oid}, function(err, cursor) {
-                    cursor.toArray(function(err, results) {
-                        var html = model.render("view.page", results[0], config);
-                        page.renderPage(html, res, config);
-                    });
-                });
-            });
-        });
 
         app.get("/" + model.name, function(req, res){
             var db = _db.getDB(config);
@@ -43,6 +31,12 @@ exports.createAutoRoutes = function(models, app, config) {
             });
         });
 
+        //FIXME: I don't think I want this...
+        app.get("/" + model.name + "/create", function(req, res){
+            html = model.render("form", {}, config);
+            page.renderPage(html, res, config);
+        });
+
         app.get("/_forms/" + model.name, function(req, res){
             ret = {};
             ret.html = model.render("form", {}, config);
@@ -51,7 +45,20 @@ exports.createAutoRoutes = function(models, app, config) {
             util.sendJson(ret, res);
         });
 
+        app.get("/" + model.name + "/:_id", function(req, res){
+            var db = _db.getDB(config);
+            _db.getCollection(db, model.name, function(err, collection) {
+                var oid = db.bson_serializer.ObjectID(req.params._id);
+                collection.find({_id: oid}, function(err, cursor) {
+                    cursor.toArray(function(err, results) {
+                        var html = model.render("view.page", results[0], config);
+                        page.renderPage(html, res, config);
+                    });
+                });
+            });
+        });
 
+        //FIXME: change to 'delete' method
         app.post("/" + model.name + "/delete", function(req, res){
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {
