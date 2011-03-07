@@ -4,15 +4,17 @@ var fs = require("fs"),
     mu = require("mustache"),
     mongodb = require("mongodb");
 
-var Model = function(name) {
+var Model = function(name, path) {
     this.name = name;
+    this.path = path;
+
+    this.methods = this._getMethods();
 }
 
 Model.prototype = {
     
-    getFixturesData: function(app_dir) {
-        var model_path = this.getPath(app_dir);
-        var fixtures_path = path.join(model_path, "fixtures.json");
+    getFixturesData: function() {
+        var fixtures_path = path.join(this.path, "fixtures.json");
         if(path.existsSync(fixtures_path)) {
             return util.readJson(fixtures_path);
         } else {
@@ -20,15 +22,22 @@ Model.prototype = {
         }
     },
 
-    getPath: function(app_dir) {
-        return path.join(app_dir, "models", this.name);
-    },
-
-    render: function(context, data, config) {
-        var template = path.join(this.getPath(config.app_dir), context + ".html");
+    render: function(context, data) {
+        var template = path.join(this.path, context + ".html");
         var template_text = fs.readFileSync(template, "utf8");
 
         return mu.to_html(template_text, data);
+    },
+
+    _getMethods: function() {
+        var methods_file = path.join(this.path, "methods.js");
+
+        if(path.existsSync(methods_file)) {
+            var methods = require(methods_file);
+            return methods.methods;
+        } else {
+            return {}
+        }
     }
 
 }
@@ -38,7 +47,9 @@ exports.generateModels = function(app_dir) {
     var models = []
     model_names.forEach(function(model_name){
         console.log("Registered model " + model_name);
-        models.push(new Model(model_name));
+
+        var model_path = path.join(app_dir, "models", model_name);
+        models.push(new Model(model_name, model_path));
     });
 
     return models;

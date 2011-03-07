@@ -4,6 +4,7 @@ var mongodb = require("mongodb");
 var page = require("./page");
 var util = require("./util");
 var _db = require("./db");
+var ErrorDict = require("./error_dict").ErrorDict;
 
 exports.createAutoRoutes = function(models, app, config) {
     models.forEach(function(model) {
@@ -76,10 +77,29 @@ exports.createAutoRoutes = function(models, app, config) {
         app.post("/" + model.name, function(req, res){
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {
-                collection.insert(req.body);
-                db.close();
 
-                util.sendJson({success: true}, res);
+                if(model.methods._validate) {
+                    var errs = new ErrorDict();
+                    model.methods._validate(req.body, db, errs, function(errs){
+                        if(errs.hasErrors()) {
+                            var errs_dict = errs.getErrors();
+                            errs_dict.success = false;
+                            util.sendJson(errs_dict, res);
+                        } else {
+                        
+                            //FIXME: DRY
+                            collection.insert(req.body);
+                            db.close();
+
+                            util.sendJson({success: true}, res);
+                        }
+                    });
+                } else {
+                    collection.insert(req.body);
+                    db.close();
+
+                    util.sendJson({success: true}, res);
+                }
             });
         });
     });
