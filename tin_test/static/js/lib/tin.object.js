@@ -63,7 +63,7 @@ Tin.prototype = {
     fetchForm: function(){
       var self = this;
 
-      $.get("/_forms/" + this.metadata._model, {}, function(data){
+      $.get("/_form/" + this.metadata._model, {}, function(data){
           self.elem.html(data.html);
           //var form = $(data.html);
           //self.replaceElemWith(form);
@@ -92,7 +92,7 @@ Tin.prototype = {
         this.elem.attr('href', '#');
 
         this.elem.click(function() {
-          $.post("/" + self.metadata._model + "/" + self.metadata._method, self.metadata, function(data){
+          $.post("/_method/" + self.metadata._model + "/" + self.metadata._method, self.metadata, function(data){
             if(self.metadata._on_success) {
               window[self.metadata._on_success](data);
             }

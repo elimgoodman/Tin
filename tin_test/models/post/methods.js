@@ -10,6 +10,16 @@ exports.methods = {
         }
         
         done(errs);
+    },
+
+    changeTitle: function(params, db, done) {
+      db.findById(params._id, function(result){
+        result.title = "CHANGED";
+        db.save(result, function(){
+            db.close();
+            done({success: true});
+        });
+      })
     }
 
 }

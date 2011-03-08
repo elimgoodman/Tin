@@ -35,14 +35,13 @@ exports.createAutoRoutes = function(models, app, config) {
             });
         });
 
-        app.get("/_forms/" + model.name, function(req, res){
+        app.get("/_form/" + model.name, function(req, res){
             ret = {};
             ret.success = true;
             model.render("form", {}, function(html){
                 ret.html = html;
                 util.sendJson(ret, res);
             });
-
         });
 
         app.get("/" + model.name + "/:_id", function(req, res){
@@ -60,7 +59,8 @@ exports.createAutoRoutes = function(models, app, config) {
         });
 
         //FIXME: change to 'delete' method
-        app.post("/" + model.name + "/delete", function(req, res){
+        //FIXME: SUXX
+        app.post("/_method/" + model.name + "/delete", function(req, res){
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {
                 var oid = db.bson_serializer.ObjectID(req.body._id);
@@ -69,6 +69,16 @@ exports.createAutoRoutes = function(models, app, config) {
                         success: true
                     };
 
+                    util.sendJson(ret, res);
+                });
+            });
+        });
+
+        Object.keys(model.methods).forEach(function(method){
+            app.post("/_method/" + model.name + "/" + method, function(req, res){
+
+                var DB = new _db.DB(config, model.name);
+                model.methods[method](req.body, DB, function(ret){
                     util.sendJson(ret, res);
                 });
             });
