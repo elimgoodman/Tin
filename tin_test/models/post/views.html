@@ -1,0 +1,26 @@
+<block class="tin" _name="list">
+  <li>Title: <a href="/post/{{_id}}">{{title}}</a>
+  <a
+      _model="post"
+      _method="delete"
+      _id="{{_id}}"
+      _on_success="refresh_list"
+      class="tin">
+      X
+  </a>
+  </li>
+</block>
+
+<block class="tin" _name="page">
+  <h1>{{title}}</h1>
+  <p>{{content}}</p>
+  <a href="/">Back</a>
+</block>
+
+<block class="tin" _name="form">
+  <ul>
+      <li>Title: <input name="title"></li>
+      <li>Content: <textarea name="content"></textarea></li>
+      <li><input type="submit" value="Save" /></li>
+  </ul>
+</block>

@@ -22,11 +22,16 @@ Model.prototype = {
         }
     },
 
-    render: function(context, data) {
-        var template = path.join(this.path, context + ".html");
-        var template_text = fs.readFileSync(template, "utf8");
+    render: function(context, data, callback) {
+        var template = path.join(this.path, "views.html");
+        var html = fs.readFileSync(template, "utf8");
+        
+        util.jQueryify(html, function(window, $){
+          var template_html = $("block.tin[_name=" + context + "]").html();
+          var rendered = mu.to_html(template_html, data);
+          callback(rendered);
+        });
 
-        return mu.to_html(template_text, data);
     },
 
     _getMethods: function() {

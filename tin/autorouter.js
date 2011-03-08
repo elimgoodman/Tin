@@ -15,35 +15,34 @@ exports.createAutoRoutes = function(models, app, config) {
                 collection.find(function(err, cursor) {
                     cursor.toArray(function(err, results) {
                         var snippets = [];
+                        results = results.filter(function(d) { return d != null; });
                         results.forEach(function(doc) {
-                            if(doc != null) {
-                                snippets.push(model.render('view.list', doc, config));
-                            }
+                            model.render('list', doc, function(html){
+                                snippets.push(html);
+
+                                if(snippets.length == results.length) {
+                                    ret = {};
+                                    ret.html = snippets.join("");
+                                    ret.success = true;
+                                    db.close();
+
+                                    util.sendJson(ret, res);
+                                }
+                            });
                         });
-
-                        ret = {};
-                        ret.html = snippets.join("");
-                        ret.success = true;
-                        db.close();
-
-                        util.sendJson(ret, res);
                     });
                 });
             });
         });
 
-        //FIXME: I don't think I want this...
-        app.get("/" + model.name + "/create", function(req, res){
-            html = model.render("form", {}, config);
-            page.renderPage(html, res, config);
-        });
-
         app.get("/_forms/" + model.name, function(req, res){
             ret = {};
-            ret.html = model.render("form", {}, config);
             ret.success = true;
+            model.render("form", {}, function(html){
+                ret.html = html;
+                util.sendJson(ret, res);
+            });
 
-            util.sendJson(ret, res);
         });
 
         app.get("/" + model.name + "/:_id", function(req, res){
@@ -52,8 +51,9 @@ exports.createAutoRoutes = function(models, app, config) {
                 var oid = db.bson_serializer.ObjectID(req.params._id);
                 collection.find({_id: oid}, function(err, cursor) {
                     cursor.toArray(function(err, results) {
-                        var html = model.render("view.page", results[0], config);
-                        page.renderPage(html, res, config);
+                        model.render("page", results[0], function(html){
+                            page.renderPage(html, res, config);
+                        });
                     });
                 });
             });
@@ -82,9 +82,11 @@ exports.createAutoRoutes = function(models, app, config) {
                     var errs = new ErrorDict();
                     model.methods._validate(req.body, db, errs, function(errs){
                         if(errs.hasErrors()) {
+                            var ret = {};
                             var errs_dict = errs.getErrors();
-                            errs_dict.success = false;
-                            util.sendJson(errs_dict, res);
+                            ret.success = false;
+                            ret.errors = errs_dict;
+                            util.sendJson(ret, res);
                         } else {
                         
                             //FIXME: DRY

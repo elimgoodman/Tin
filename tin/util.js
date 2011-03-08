@@ -55,12 +55,3 @@ exports.jQueryify = function(html, callback) {
 exports.wrap = function(html, wrapper) {
     return "<"+wrapper+">" + html + "</"+wrapper+">";
 }
-
-exports.makeErrorDict = function(doc) {
-    errs = {};
-    for(var key in doc) {
-        errs.key = [];
-    }
-
-    return errs;
-}

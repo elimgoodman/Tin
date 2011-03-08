@@ -32,11 +32,27 @@ Tin.prototype = {
 
     onFormSubmit: function(self) {
 
-      console.log(self.metadata);
+      self.elem.find("div.error").remove();
+
       var values = self.elem.serializeArray();
       $.post("/" + self.metadata._model, values, function(data) {
-        if(self.metadata._on_success) {
-          window[self.metadata._on_success](data);
+        if(data.success) {
+          if(self.metadata._on_success) {
+            window[self.metadata._on_success](data);
+          }
+        } else {
+          if(self.metadata._on_failure) {
+            window[self.metadata._on_failure](data);
+          } else {
+            $.each(data.errors, function(field, errors){
+              self.elem.find('input[name=' + field + ']').addClass("error");
+
+              $.each(errors, function(i, error) {
+                var err_msg = $("<div>").addClass("error").html(error);
+                self.elem.prepend(err_msg);
+              });
+            });
+          }
         }
       }, "json");
 
