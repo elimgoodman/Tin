@@ -9,6 +9,7 @@ var Model = function(name, path) {
     this.path = path;
 
     this.methods = this._getMethods();
+    this._getViews();
 }
 
 Model.prototype = {
@@ -26,8 +27,9 @@ Model.prototype = {
         var template = path.join(this.path, "views.html");
         var html = fs.readFileSync(template, "utf8");
         
+        var self = this;
         util.jQueryify(html, function(window, $){
-          var template_html = $("block.tin[_name=" + context + "]").html();
+          var template_html = self.views[context];
           var rendered = mu.to_html(template_html, data);
           callback(rendered);
         });
@@ -43,8 +45,26 @@ Model.prototype = {
         } else {
             return {}
         }
-    }
+    },
 
+    _getViews: function() {
+
+        var self = this;
+
+        var views_file = path.join(this.path, "views.html");
+        var views_html = fs.readFileSync(views_file, "utf8");
+        var views = {};
+        util.jQueryify(views_html, function(window, $){
+            //Don't know why jQuery doesn't work here...??
+            var blocks = window.document.getElementsByTagName("block");
+            for(var i = 0; i < blocks.length; i++) {
+                var name = blocks[i].getAttribute("_name");
+                views[name] = blocks[i].innerHTML;
+            }
+
+          self.views = views;
+        });
+    }
 }
 
 exports.generateModels = function(app_dir) {
