@@ -1,2 +1,7 @@
-- auto-overlay for create, edit (make wrap in form happen on backend)
 - make editing work
+- all builtins start w/_ (ie change delete)
+- restart server on template change
+- unify DB methods
+- all tin.obj urls to Urls.js
+- impelent owned models/permissions.js
+- remove inline form razzamatazz

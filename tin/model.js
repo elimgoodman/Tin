@@ -23,17 +23,21 @@ Model.prototype = {
         }
     },
 
-    render: function(context, data, callback) {
-        var template = path.join(this.path, "views.html");
-        var html = fs.readFileSync(template, "utf8");
-        
-        var self = this;
-        util.jQueryify(html, function(window, $){
-          var template_html = self.views[context];
-          var rendered = mu.to_html(template_html, data);
-          callback(rendered);
-        });
+    render: function(context, data, done) {
+        var template_html = this.views[context];
+        var rendered = mu.to_html(template_html, data);
+        done(rendered);
+    },
 
+    populateForm: function(doc, done) {
+        this.render("form", {}, function(html){
+            util.jQueryify(html, function(window, $){
+                Object.keys(doc).forEach(function(key) {
+                    $("*[name="+key+"]").val(doc[key]);
+                });
+                done(window.document.innerHTML);
+            });
+        });
     },
 
     _getMethods: function() {

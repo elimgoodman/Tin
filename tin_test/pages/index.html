@@ -1,8 +1,10 @@
 <meta class="tin" _require_login="true" />
 
 <h1> HELLO WORLD </h1>
-<ul class="tin" _model="post" id="post_list" /><hr />
-<form class="tin" _model="post" _on_success="refresh_list" />
-</form>
+<ul class="tin" _model="post" id="post_list" />
 Hi, <span class="tin" tin='{"value": "user.login_name"}'></span>
 <a href="/logout">Log out</a>
+
+<overlay _model="post" _method="_create" _on_success="refresh_list" class="tin">
+    <a>Make new</a>
+</overlay>

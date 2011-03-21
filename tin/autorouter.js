@@ -3,7 +3,7 @@ var mongodb = require("mongodb");
 
 var page = require("./page");
 var util = require("./util");
-var _db = require("./db");
+var _db = require("./db"); //FIXME: eventually just include DB obj
 var ErrorDict = require("./error_dict").ErrorDict;
 
 exports.createAutoRoutes = function(models, app, config) {
@@ -38,22 +38,34 @@ exports.createAutoRoutes = function(models, app, config) {
         app.get("/_form/" + model.name, function(req, res){
             ret = {};
             ret.success = true;
+
             model.render("form", {}, function(html){
                 ret.html = html;
                 util.sendJson(ret, res);
             });
         });
 
+        app.get("/_form/" + model.name + "/:_id", function(req, res) {
+        
+            var DB = new _db.DB(config, model);
+            DB.findById(req.params._id, function(doc) {
+                //TODO: is model the right place for this?
+                model.populateForm(doc, function(html){
+                    ret.html = html;
+
+                    DB.close();
+                    util.sendJson(ret, res);
+                });
+            });
+        });
+
         app.get("/" + model.name + "/:_id", function(req, res){
-            var db = _db.getDB(config);
-            _db.getCollection(db, model.name, function(err, collection) {
-                var oid = db.bson_serializer.ObjectID(req.params._id);
-                collection.find({_id: oid}, function(err, cursor) {
-                    cursor.toArray(function(err, results) {
-                        model.render("page", results[0], function(html){
-                            page.renderPage(html, res, config);
-                        });
-                    });
+            var DB = new _db.DB(config, model);
+            DB.findById(req.params._id, function(doc){
+                model.render("page", doc, function(html){
+
+                    DB.close();
+                    page.renderPage(html, res, config);
                 });
             });
         });
@@ -75,15 +87,31 @@ exports.createAutoRoutes = function(models, app, config) {
         });
 
         Object.keys(model.methods).forEach(function(method){
+            console.log("Registered method " + method + " on model " + model.name);
             app.post("/_method/" + model.name + "/" + method, function(req, res){
 
-                var DB = new _db.DB(config, model.name);
+                var DB = new _db.DB(config, model);
                 model.methods[method](req.body, DB, function(ret){
                     util.sendJson(ret, res);
                 });
             });
         });
 
+        //Technically this should be put...meh
+        app.post("/" + model.name + "/:_id", function(req, res){
+            var DB = new _db.DB(config, model);
+            DB.save(util.merge({_id: req.params._id}, req.body), function(errs){
+                if(errs.hasErrors()) {
+                    util.sendJson(util.merge(
+                        {success: false}, errs.getErrors()
+                    ), res);
+                } else {
+                    util.sendJson({success: true}, res);
+                }
+            });
+        });
+
+        //FIXME: REFACTOR + TEST THIS YO
         app.post("/" + model.name, function(req, res){
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {

@@ -13,6 +13,8 @@ Tin.prototype = {
           this.fetchForm();
         } else if (this.elem.is("a")) {
             this.initAnchor();
+        } else if (this.elem.is("overlay")) {
+            this.initOverlay();
         }
       }
 
@@ -24,18 +26,17 @@ Tin.prototype = {
 
       $.get("/" + this.metadata._model, {}, function(data){
         self.elem.html(data.html);
-        //var list = $(data.html);
-        //self.replaceElemWith(list);
         self.elem.find(".tin").tin();
       }, "json");
     },
 
-    onFormSubmit: function(self) {
+    onFormSubmit: function(self, form) {
 
-      self.elem.find("div.error").remove();
+      form.find("div.error").remove();
 
-      var values = self.elem.serializeArray();
-      $.post("/" + self.metadata._model, values, function(data) {
+      var values = form.serializeArray();
+      var url = Urls.formSubmitUrl(self.metadata._model, self.metadata._id);
+      $.post(url, values, function(data) {
         if(data.success) {
           if(self.metadata._on_success) {
             window[self.metadata._on_success](data);
@@ -45,11 +46,11 @@ Tin.prototype = {
             window[self.metadata._on_failure](data);
           } else {
             $.each(data.errors, function(field, errors){
-              self.elem.find('input[name=' + field + ']').addClass("error");
+              form.find('input[name=' + field + ']').addClass("error");
 
               $.each(errors, function(i, error) {
                 var err_msg = $("<div>").addClass("error").html(error);
-                self.elem.prepend(err_msg);
+                form.prepend(err_msg);
               });
             });
           }
@@ -60,26 +61,26 @@ Tin.prototype = {
 
     },
 
+    //FIXME: remove all this inline form razzamatazz
     fetchForm: function(){
       var self = this;
 
       $.get("/_form/" + this.metadata._model, {}, function(data){
           self.elem.html(data.html);
-          //var form = $(data.html);
-          //self.replaceElemWith(form);
           self.elem.submit(function(){
-            return self.onFormSubmit(self);
+            return self.onformsubmit(self);
           });
       }, "json");
     },
     
+    //FIXME: no longer used...
     replaceElemWith: function(elem) {
       this.elem.replaceWith(elem);
       this.elem = elem;
       this.attachMetadata(elem);
     },
 
-
+    //FIXME: no longer used...
     attachMetadata: function(elem) {
         $.each(this.metadata, function(key, val){
           elem.attr(key, val);
@@ -97,6 +98,40 @@ Tin.prototype = {
               window[self.metadata._on_success](data);
             }
           }, "json");
+        });
+    },
+
+    initOverlay: function() {
+        var self = this;
+        //TODO: move this somewhere better
+        if($("#overlay").length == 0) {
+            var overlay = $("<div>")
+                .addClass("overlay")
+                .attr("id", "overlay")
+                .hide();
+            var inner = $("<div>").addClass('inner');
+            overlay.append(inner);
+            $("body").append(overlay);
+        }
+        var link = this.elem.children("a");
+        link.attr('href', '#').attr('rel', '#overlay');
+        link.overlay({
+            onBeforeLoad: function() {
+                inner = this.getOverlay().find(".inner");
+                $.get(Urls.formUrl(self.metadata._model, self.metadata._id), {}, function(data){
+                    var form = $("<form>")
+                        .html(data.html)
+                        .submit(function(){
+                            return self.onFormSubmit(self, $(this));
+                        });
+
+                    if(self.metadata._id != undefined) {
+                        self.elem.attr("_id", self.metadata._id);
+                    }
+
+                    inner.html(form);
+                }, "json");
+            }
         });
     }
 }

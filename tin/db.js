@@ -1,10 +1,12 @@
 //TODO: rename to....collection? table?
 var mongodb = require("mongodb");
+var ErrorDict = require("./error_dict").ErrorDict;
 
-var DB = function(config, coll_name){
+var DB = function(config, model){
     var server = new mongodb.Server(config.db_host, config.db_port, {});
     this.db = new mongodb.Db(config.app_name, server);
-    this.coll_name = coll_name;
+    this.coll_name = model.name;
+    this.model = model;
     this.coll = null;
 };
 
@@ -26,9 +28,23 @@ DB.prototype = {
   },
 
   save: function(doc, done) {
+    var self = this;
+    var errs = new ErrorDict();
+    console.log(doc);
     this._getCollection(function(coll) {
-        coll.save(doc);
-        done();
+        if(self.model.methods._validate) {
+            self.model.methods._validate(doc, self, errs, function(errs){
+                if(errs.hasErrors()) {
+                    done(errs);
+                } else {
+                    coll.save(doc);
+                    done(errs);
+                }
+            });
+        } else {
+            coll.save(doc);
+            done(errs);
+        }
     });
   },
 

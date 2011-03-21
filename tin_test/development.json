@@ -7,6 +7,7 @@
     "auth": {
         "enabled": false,
         "user_model": "user",
-        "login_page": "login"
+        "login_page": "login",
+        "owned_models" : ["post"]
     }
 }

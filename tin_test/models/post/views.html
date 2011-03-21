@@ -16,6 +16,13 @@
     class="tin">
     Change the title!
   </a>
+  <overlay
+      _model="post"
+      _id="{{_id}}"
+      _on_success="refresh_list"
+      class="tin">
+      <a>Edit</a>
+    </overlay>
   </li>
 </block>
 
