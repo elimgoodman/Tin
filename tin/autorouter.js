@@ -51,10 +51,8 @@ exports.createAutoRoutes = function(models, app, config) {
             DB.findById(req.params._id, function(doc) {
                 //TODO: is model the right place for this?
                 model.populateForm(doc, function(html){
-                    ret.html = html;
-
                     DB.close();
-                    util.sendJson(ret, res);
+                    util.sendJson({html: html}, res);
                 });
             });
         });
@@ -100,7 +98,9 @@ exports.createAutoRoutes = function(models, app, config) {
         //Technically this should be put...meh
         app.post("/" + model.name + "/:_id", function(req, res){
             var DB = new _db.DB(config, model);
-            DB.save(util.merge({_id: req.params._id}, req.body), function(errs){
+            var id = DB.makeId(req.params._id)
+            DB.save(util.merge({_id: id}, req.body), function(errs){
+                DB.close();
                 if(errs.hasErrors()) {
                     util.sendJson(util.merge(
                         {success: false}, errs.getErrors()

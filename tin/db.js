@@ -30,7 +30,6 @@ DB.prototype = {
   save: function(doc, done) {
     var self = this;
     var errs = new ErrorDict();
-    console.log(doc);
     this._getCollection(function(coll) {
         if(self.model.methods._validate) {
             self.model.methods._validate(doc, self, errs, function(errs){
@@ -62,6 +61,10 @@ DB.prototype = {
 
   close: function() {
     this.db.close();
+  },
+
+  makeId: function(id) {
+    return this.db.bson_serializer.ObjectID(id);
   }
 
 };

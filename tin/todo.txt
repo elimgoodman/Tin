@@ -5,3 +5,4 @@
 - all tin.obj urls to Urls.js
 - impelent owned models/permissions.js
 - remove inline form razzamatazz
+- add _user var to all pages
