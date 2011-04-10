@@ -1,4 +1,6 @@
-- impelent owned models/permissions.js
+- perms in DB layer? how to deal with custom methods?
+- perms callable from templates
+    - could possibly hack it up in JS...
 - all builtins start w/_ (ie change delete)
 - restart server on template change
 - unify DB methods
