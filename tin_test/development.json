@@ -5,7 +5,7 @@
     "db_host": "127.0.0.1",
     "db_port": 27017,
     "auth": {
-        "enabled": false,
+        "enabled": true,
         "user_model": "user",
         "login_page": "login",
         "owned_models" : ["post"]

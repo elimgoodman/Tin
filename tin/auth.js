@@ -28,11 +28,9 @@ exports.wireUpAuth = function(app, config) {
             var params = {
                 login_name: req.body.login_name,
             }
-            console.log(params);
             collection.find(params, function(err, cursor) {
                 cursor.toArray(function(err, results){
-                    console.log(results);
-                    if(results[0].password == req.body.password) {
+                    if(results.length > 0 && results[0].password == req.body.password) {
                         req.session.user = results[0];
                         res.redirect("/");
                     } else {

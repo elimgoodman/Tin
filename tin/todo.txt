@@ -1,8 +1,7 @@
-- make editing work
+- impelent owned models/permissions.js
 - all builtins start w/_ (ie change delete)
 - restart server on template change
 - unify DB methods
 - all tin.obj urls to Urls.js
-- impelent owned models/permissions.js
 - remove inline form razzamatazz
 - add _user var to all pages

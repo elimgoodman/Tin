@@ -1,5 +1,5 @@
 {
     "owned" : true,
-    "editable_by": "owner",
+    "editable_by": "anyone",
     "viewable_by": "anyone"
 }

@@ -8,7 +8,8 @@ var Model = function(name, path) {
     this.name = name;
     this.path = path;
 
-    this.methods = this._getMethods();
+    this._getMethods();
+    this._getPermisssions();
     this._getViews();
 }
 
@@ -45,9 +46,9 @@ Model.prototype = {
 
         if(path.existsSync(methods_file)) {
             var methods = require(methods_file);
-            return methods.methods;
+            this.methods = methods.methods;
         } else {
-            return {}
+            this.methods = {};
         }
     },
 
@@ -68,6 +69,19 @@ Model.prototype = {
 
           self.views = views;
         });
+    },
+
+    _getPermisssions: function() {
+        var self = this;
+        var perms_file = path.join(this.path, "permissions.json");
+
+        if(path.existsSync(perms_file)) {
+            var perms_txt = fs.readFileSync(perms_file, "utf8");
+            this.permissions = JSON.parse(perms_txt);
+        } else {
+            this.permissions = {};
+        }
+
     }
 }
 

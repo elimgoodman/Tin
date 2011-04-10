@@ -5,6 +5,7 @@ var page = require("./page");
 var util = require("./util");
 var _db = require("./db"); //FIXME: eventually just include DB obj
 var ErrorDict = require("./error_dict").ErrorDict;
+var Permissioner = require("./permissioner").Permissioner;
 
 exports.createAutoRoutes = function(models, app, config) {
     models.forEach(function(model) {
@@ -15,7 +16,10 @@ exports.createAutoRoutes = function(models, app, config) {
                 collection.find(function(err, cursor) {
                     cursor.toArray(function(err, results) {
                         var snippets = [];
-                        results = results.filter(function(d) { return d != null; });
+                        var permer = new Permissioner(config, model);
+                        results = results.filter(function(d) {
+                            return permer.isViewable(d, req.session);
+                        });
                         results.forEach(function(doc) {
                             model.render('list', doc, function(html){
                                 snippets.push(html);
@@ -60,6 +64,13 @@ exports.createAutoRoutes = function(models, app, config) {
         app.get("/" + model.name + "/:_id", function(req, res){
             var DB = new _db.DB(config, model);
             DB.findById(req.params._id, function(doc){
+                
+                var permer = new Permissioner(config, model);
+                if(!permer.isViewable(doc, req.session)){
+                    res.redirect("/");
+                    return;
+                };
+
                 model.render("page", doc, function(html){
 
                     DB.close();
@@ -70,6 +81,7 @@ exports.createAutoRoutes = function(models, app, config) {
 
         //FIXME: change to 'delete' method
         //FIXME: SUXX
+        //FIXME: use refactored DB
         app.post("/_method/" + model.name + "/delete", function(req, res){
             var db = _db.getDB(config);
             _db.getCollection(db, model.name, function(err, collection) {
@@ -98,48 +110,59 @@ exports.createAutoRoutes = function(models, app, config) {
         //Technically this should be put...meh
         app.post("/" + model.name + "/:_id", function(req, res){
             var DB = new _db.DB(config, model);
-            var id = DB.makeId(req.params._id)
-            DB.save(util.merge({_id: id}, req.body), function(errs){
-                DB.close();
-                if(errs.hasErrors()) {
-                    util.sendJson(util.merge(
-                        {success: false}, errs.getErrors()
-                    ), res);
-                } else {
-                    util.sendJson({success: true}, res);
-                }
-            });
-        });
+            var permer = new Permissioner(config, model);
 
-        //FIXME: REFACTOR + TEST THIS YO
-        app.post("/" + model.name, function(req, res){
-            var db = _db.getDB(config);
-            _db.getCollection(db, model.name, function(err, collection) {
+            //We have to pull the doc out of the DB to check the owner..
+            DB.findById(req.params._id, function(doc) {
+                if(permer.isEditable(doc, req.session)){
+                    
+                    var modified = doc;
 
-                if(model.methods._validate) {
-                    var errs = new ErrorDict();
-                    model.methods._validate(req.body, db, errs, function(errs){
-                        if(errs.hasErrors()) {
-                            var ret = {};
-                            var errs_dict = errs.getErrors();
-                            ret.success = false;
-                            ret.errors = errs_dict;
-                            util.sendJson(ret, res);
-                        } else {
-                        
-                            //FIXME: DRY
-                            collection.insert(req.body);
-                            db.close();
+                    for(key in req.body) {
+                        modified[key] = req.body[key];
+                    };
 
-                            util.sendJson({success: true}, res);
-                        }
+                    DB.save(modified, function(errs){
+
+                        var ret = {
+                            success: !errs.hasErrors(), 
+                            errors: errs.getErrors()
+                        };
+
+                        DB.close();
+                        util.sendJson(ret, res);
                     });
                 } else {
-                    collection.insert(req.body);
-                    db.close();
 
-                    util.sendJson({success: true}, res);
+                    var ret = {
+                        success: false, 
+                        errors: {} // what to put here?
+                    };
+
+                    DB.close();
+                    util.sendJson(ret, res);
                 }
+            });
+
+        });
+
+        app.post("/" + model.name, function(req, res){
+            
+            //Add owner info if necessary
+            var permer = new Permissioner(config, model);
+            var doc = permer.addOwner(req.body, req.session);
+
+            var DB = new _db.DB(config, model);
+            DB.save(doc, function(errs){
+
+                var ret = {
+                    success: !errs.hasErrors(), 
+                    errors: errs.getErrors()
+                };
+
+                DB.close();
+                util.sendJson(ret, res);
+
             });
         });
     });
