@@ -7,3 +7,12 @@
 - all tin.obj urls to Urls.js
 - remove inline form razzamatazz
 - add _user var to all pages
+- add to git:
+    -mustache 0.3.1 
+    -jsdom 0.1.20/0.2?? 
+    -express 1.0.7 
+    -mongo 0.9.1
+    -connect 0.5.7
+    -request 1.9.0
+    -htmlparser 1.7.3
+    -qs 0.0.6

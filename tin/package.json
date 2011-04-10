@@ -1,0 +1,24 @@
+{
+  "name": "tin",
+  "description": "A framework for making site sketches",
+  "version": "0.0.1",
+  "author": "Eli Goodman <eli.m.goodman@gmail.com>",
+  "contributors": [
+    { "name": "Eli Goodman", "email": "eli.m.goodman@gmail.com" }
+  ],
+  "dependencies": {
+    "connect": "== 0.5.7",
+    "qs": "== 0.0.6",
+    "express": "== 1.0.7",
+    "mongodb": "== 0.9.1",
+    "request": "== 1.9.0",
+    "htmlparser": "== 1.7.3",
+    "jsdom": "== 0.2"
+  },
+  "keywords": ["framework", "web", "rapid", "sketch"],
+  "directories": { "lib": "./src" },
+  "bin": { "tin": "./bin/tin" },
+  "engines": { "node": ">= 0.4.0" }
+}
+
+
