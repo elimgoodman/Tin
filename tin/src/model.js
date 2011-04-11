@@ -1,7 +1,9 @@
 var fs = require("fs"),
     path = require("path"),
     util = require("./util"),
-    mu = require("mustache"),
+    //mu = require("mustache"),
+    //ejs = require("ejs"),
+    jqtpl = require("jqtpl"),
     mongodb = require("mongodb");
 
 var Model = function(name, path) {
@@ -26,7 +28,10 @@ Model.prototype = {
 
     render: function(context, data, done) {
         var template_html = this.views[context];
-        var rendered = mu.to_html(template_html, data);
+        //var rendered = mu.to_html(template_html, data);
+        //var tmpl = ejs.compile(template_html);
+        //var rendered = tmpl(data);
+        var rendered = jqtpl.tmpl(template_html, data);
         done(rendered);
     },
 

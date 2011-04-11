@@ -1,9 +1,9 @@
 <block class="tin" _name="list">
-  <li>Title: <a href="/post/{{_id}}">{{title}}</a>
+<li>Title: <a href="/post/${_id}">${title}</a>
   <a
       _model="post"
       _method="delete"
-      _id="{{_id}}"
+      _id="${_id}"
       _on_success="refresh_list"
       class="tin">
       X
@@ -11,14 +11,14 @@
   <a
     _model="post"
     _method="changeTitle"
-    _id="{{_id}}"
+    _id="${_id}"
     _on_success="refresh_list"
     class="tin">
     Change the title!
   </a>
   <overlay
       _model="post"
-      _id="{{_id}}"
+      _id="${_id}"
       _on_success="refresh_list"
       class="tin">
       <a>Edit</a>
@@ -27,8 +27,8 @@
 </block>
 
 <block class="tin" _name="page">
-  <h1>{{title}}</h1>
-  <p>{{content}}</p>
+<h1>${title}</h1>
+    <p>${content}</p>
   <a href="/">Back</a>
 </block>
 

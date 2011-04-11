@@ -2,7 +2,7 @@ var fs = require("fs");
 var path = require("path");
 
 var jsdom = require("jsdom");
-var mu = require("mustache");
+var jqtpl = require("jqtpl");
 
 var util = require("./util");
 var auth = require("./auth");
@@ -11,6 +11,13 @@ var Page = function(name, path, require_login) {
     this.name = name;
     this.path = path;
     this.require_login = require_login;
+    this.html = fs.readFileSync(path, "utf8");
+}
+
+Page.prototype = {
+    render: function(data) {
+        return jqtpl.tmpl(this.html, data);
+    }
 }
 
 generatePages = function(app_dir, callback) {
@@ -38,6 +45,7 @@ generatePages = function(app_dir, callback) {
     });
 }
 
+//FIXME: uhhh cache this
 getLayoutHtml = function(config) {
     
     var layout_path = path.join(config.app_dir, "layout.html");
@@ -45,8 +53,10 @@ getLayoutHtml = function(config) {
 
 }
 
-renderPage = function(html, res, config) {
+renderPage = function(page, req, res, config) {
   var layout_html = getLayoutHtml(config);
+  var globals = getTemplateGlobals(req.session, config);
+  var html = page.render(globals);
 
   util.jQueryify(layout_html, function(window, $){
 
@@ -57,6 +67,16 @@ renderPage = function(html, res, config) {
   });
 }
 
+getTemplateGlobals = function(session, config) {
+    var globals = {};
+    
+    if(config.auth.enabled) {
+        globals._user = session.user;
+    }
+
+    return globals;
+}
+
 exports.wireUpPages = function(app, config) {
     
     generatePages(config.app_dir, function(pages) {
@@ -64,8 +84,7 @@ exports.wireUpPages = function(app, config) {
             var url = (config.index_page == page.name) ? "/" : "/" + page.name;
 
             app.get(url, auth.authUser(page, config), function(req, res){
-              var html = fs.readFileSync(page.path, "utf8");
-              renderPage(html, res, config);
+              renderPage(page, req, res, config);
             });
         });
     });  
