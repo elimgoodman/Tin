@@ -54,9 +54,13 @@ getLayoutHtml = function(config) {
 }
 
 renderPage = function(page, req, res, config) {
-  var layout_html = getLayoutHtml(config);
   var globals = getTemplateGlobals(req.session, config);
   var html = page.render(globals);
+  renderHTML(html, req, res, config);
+}
+
+renderHTML = function(html, req, res, config) {
+  var layout_html = getLayoutHtml(config);
 
   util.jQueryify(layout_html, function(window, $){
 
@@ -65,7 +69,7 @@ renderPage = function(page, req, res, config) {
     res.write(window.document.innerHTML, "utf8");
     res.end();
   });
-}
+},
 
 getTemplateGlobals = function(session, config) {
     var globals = {};
@@ -90,6 +94,6 @@ exports.wireUpPages = function(app, config) {
     });  
 }
 
-exports.renderPage = renderPage;
+exports.renderHTML = renderHTML;
 
 

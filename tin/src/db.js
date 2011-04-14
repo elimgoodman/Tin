@@ -37,6 +37,7 @@ DB.prototype = {
     save: function(doc, done) {
         var self = this;
         var errs = new ErrorDict();
+        var doc = this.ensureModelField(doc);
         this._getCollection(function(coll) {
             if(self.model.methods._validate) {
                 self.model.methods._validate(doc, self, errs, function(errs){
@@ -54,6 +55,10 @@ DB.prototype = {
                 });
             }
         });
+    },
+
+    ensureModelField: function(doc) {
+        return doc.model = this.model.name;
     },
 
     findById: function(id, done) {

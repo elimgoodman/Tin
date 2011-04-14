@@ -74,7 +74,7 @@ exports.createAutoRoutes = function(models, app, config) {
                 model.render("page", doc, function(html){
 
                     DB.close();
-                    page.renderPage(html, res, config);
+                    page.renderHTML(html, req, res, config);
                 });
             });
         });

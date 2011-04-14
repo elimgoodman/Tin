@@ -12,6 +12,7 @@ var getFixturesData = function(models, config) {
     return fixtures;
 }
 
+//FIXME: use DB obj
 var insertFixtures = function(fixtures, config) {
     var model_names = _.keys(fixtures);
 
