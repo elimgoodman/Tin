@@ -20,17 +20,27 @@ exports.createAutoRoutes = function(models, app, config) {
                         results = results.filter(function(d) {
                             return permer.isViewable(d, req.session);
                         });
+                        
+                        var done = function(snippets) {
+                          ret = {};
+                          ret.html = snippets.join("");
+                          ret.success = true;
+                          db.close();
+
+                          util.sendJson(ret, res);
+                        };
+
+                        if(results.length == 0) {
+                          done([]);
+                        }
+
                         results.forEach(function(doc) {
-                            model.render('list', doc, function(html){
+                            var globals = page.getTemplateGlobals(req.session, config);
+                            model.render('list', doc, globals, function(html){
                                 snippets.push(html);
 
                                 if(snippets.length == results.length) {
-                                    ret = {};
-                                    ret.html = snippets.join("");
-                                    ret.success = true;
-                                    db.close();
-
-                                    util.sendJson(ret, res);
+                                  done(snippets);
                                 }
                             });
                         });
@@ -43,7 +53,8 @@ exports.createAutoRoutes = function(models, app, config) {
             ret = {};
             ret.success = true;
 
-            model.render("form", {}, function(html){
+            var globals = page.getTemplateGlobals(req.session, config);
+            model.render("form", {}, globals, function(html){
                 ret.html = html;
                 util.sendJson(ret, res);
             });

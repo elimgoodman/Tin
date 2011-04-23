@@ -71,11 +71,26 @@ renderHTML = function(html, req, res, config) {
   });
 },
 
+//FIXME: put this somewhere better (globals.js?)
 getTemplateGlobals = function(session, config) {
     var globals = {};
     
     if(config.auth.enabled) {
-        globals._user = session.user;
+        if(session.user != undefined) {
+            globals._user = session.user;
+
+            //TODO: can't think of a more elegant way to do this...
+            globals._user.canView = function(doc) {
+                console.log(doc);
+            };
+
+            globals._user.canEdit = function(doc) {
+              console.log(doc);
+              return false;
+            };
+        } else {
+            globals._user = {};
+        }
     }
 
     return globals;
@@ -95,5 +110,6 @@ exports.wireUpPages = function(app, config) {
 }
 
 exports.renderHTML = renderHTML;
+exports.getTemplateGlobals = getTemplateGlobals;;
 
 

@@ -58,7 +58,8 @@ DB.prototype = {
     },
 
     ensureModelField: function(doc) {
-        return doc.model = this.model.name;
+        doc._model = this.model.name;
+        return doc;
     },
 
     findById: function(id, done) {

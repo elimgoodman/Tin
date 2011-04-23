@@ -1,8 +1,7 @@
 var fs = require("fs"),
     path = require("path"),
     util = require("./util"),
-    //mu = require("mustache"),
-    //ejs = require("ejs"),
+    page = require("./page"),
     jqtpl = require("jqtpl"),
     mongodb = require("mongodb");
 
@@ -26,11 +25,10 @@ Model.prototype = {
         }
     },
 
-    render: function(context, data, done) {
+    render: function(context, doc, globals, done) {
         var template_html = this.views[context];
-        //var rendered = mu.to_html(template_html, data);
-        //var tmpl = ejs.compile(template_html);
-        //var rendered = tmpl(data);
+        var data = globals;
+        data._this = doc;
         var rendered = jqtpl.tmpl(template_html, data);
         done(rendered);
     },
@@ -90,14 +88,20 @@ Model.prototype = {
     }
 }
 
-exports.generateModels = function(app_dir) {
-    var model_names = fs.readdirSync(path.join(app_dir, "models"));
+exports.generateModels = function(config) {
+    var model_names = fs.readdirSync(path.join(config.app_dir, "models"));
     var models = []
+
+    config.models = {};
     model_names.forEach(function(model_name){
         console.log("Registered model " + model_name);
 
-        var model_path = path.join(app_dir, "models", model_name);
-        models.push(new Model(model_name, model_path));
+        var model_path = path.join(config.app_dir, "models", model_name);
+        var model = new Model(model_name, model_path);
+        models.push(model);
+
+        //Also store on config for easy access
+        config.models.model_name = model;
     });
 
     return models;

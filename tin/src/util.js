@@ -77,3 +77,14 @@ exports.merge = function(target) {
   return target;
 };
 
+exports.extend = function(dest, from) {
+  var props = Object.getOwnPropertyNames(from);
+  props.forEach(function(name) {
+    if (name in dest) {
+      var destination = Object.getOwnPropertyDescriptor(from, name);
+      Object.defineProperty(dest, name, destination);
+    }
+  });
+  return dest;
+}
+

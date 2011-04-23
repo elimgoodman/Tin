@@ -30,7 +30,7 @@ app.use(express.staticProvider(config.app_dir + '/static'));
 page.wireUpPages(app, config);
 
 //Infer models from dir structure
-var models = model.generateModels(config.app_dir);
+var models = model.generateModels(config);
 
 //Create routes based on models
 autorouter.createAutoRoutes(models, app, config);
