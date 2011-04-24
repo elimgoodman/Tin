@@ -30,7 +30,17 @@ Model.prototype = {
         var data = globals;
         data._this = doc;
         var rendered = jqtpl.tmpl(template_html, data);
-        done(rendered);
+        
+        //To cut down on boilerplate, throw this onto
+        //every tin element
+        util.jQueryify(rendered, function(window, $){
+            $(".tin").each(function(){
+                $(this)
+                    .attr("_model", doc._model)
+                    .attr("_id", doc._id);
+            });
+            done(window.document.innerHTML);
+        });
     },
 
     populateForm: function(doc, done) {

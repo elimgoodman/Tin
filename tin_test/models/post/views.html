@@ -1,37 +1,25 @@
 <block class="tin" _name="list">
-<li>Title: <a href="/post/${_this._id}">${_this.title}</a>
-  <a
-      _model="post"
-      _method="delete"
-      _id="${_this._id}"
-      _on_success="refresh_list"
-      class="tin">
-      X
-  </a>
-  {{if _user.canEdit(_this)}}
-      <a
-        _model="post"
-        _method="changeTitle"
-        _id="${_this._id}"
-        _on_success="refresh_list"
-        class="tin">
-        Change the title!
-      </a>
-  {{/if}}
-  <overlay
-      _model="post"
-      _id="${_this._id}"
-      _on_success="refresh_list"
-      class="tin">
-      <a>Edit</a>
-    </overlay>
-  </li>
+    <li>Title: <a href="/post/${_this._id}">${_this.title}</a>
+        <a _method="delete" _on_success="refresh_list" class="tin">
+            X
+        </a>
+        {{if _user.canEdit(_this)}}
+            <a _method="changeTitle" _on_success="refresh_list" class="tin">
+                Change the title!
+            </a>
+        {{/if}}
+        <overlay _on_success="refresh_list" class="tin">
+            <a>
+                Edit
+            </a>
+        </overlay>
+    </li>
 </block>
 
 <block class="tin" _name="page">
-<h1>${title}</h1>
+    <h1>${title}</h1>
     <p>${_this.content}</p>
-  <a href="/">Back</a>
+    <a href="/">Back</a>
 </block>
 
 <block class="tin" _name="form">
