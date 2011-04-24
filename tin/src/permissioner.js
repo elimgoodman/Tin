@@ -1,3 +1,4 @@
+//FIXME: reverse param order for consistency
 var Permissioner = function(config, model) {
     this.model = model;
     this.config = config;

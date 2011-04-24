@@ -101,7 +101,7 @@ exports.generateModels = function(config) {
         models.push(model);
 
         //Also store on config for easy access
-        config.models.model_name = model;
+        config.models[model_name] = model;
     });
 
     return models;

@@ -6,6 +6,7 @@ var jqtpl = require("jqtpl");
 
 var util = require("./util");
 var auth = require("./auth");
+var Permissioner = require("./permissioner.js").Permissioner;
 
 var Page = function(name, path, require_login) {
     this.name = name;
@@ -81,12 +82,15 @@ getTemplateGlobals = function(session, config) {
 
             //TODO: can't think of a more elegant way to do this...
             globals._user.canView = function(doc) {
-                console.log(doc);
+                var model = config.models[doc._model];
+                var permer = new Permissioner(config, model);
+                return permer.isViewable(doc, session);
             };
 
             globals._user.canEdit = function(doc) {
-              console.log(doc);
-              return false;
+                var model = config.models[doc._model];
+                var permer = new Permissioner(config, model);
+                return permer.isEditable(doc, session);
             };
         } else {
             globals._user = {};
